@@ -1,2 +1,4 @@
-# TrashGPT
-GPT has been Put To Shame
+# QroqOdile
+An AI.
+
+Feel Free To Use The API Key.
