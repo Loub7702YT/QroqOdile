@@ -9,16 +9,21 @@
   <!-- iOS Home Screen Icon -->
   <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABKklEQVRYR+3XsQnCMBAG4EoHGwEq+yLkOlLXg4ci9yi5C7cmkQCk2BEmc6k6R/+qvOB0fOkHqe84qxd6QbaO5jM90BzGyF/F7Ai/3Gzdh0dX8GZFODdgNpTiFqAyBZhOiCkCmDYJLQCuoFkA7SClgAl4AgACIRbkIuAeGHWxirMRHkRkNvztNFVQVwKP1HjqCOUMIqFZRMVAbAVYSEViBjjcgzvEfgQ/HUkHf8N+miFjCwXTlzAIXazhbugzuDUFcAUlBN6ieRP70dNDO7xjoMnIKPQGd/wcgAAF+yoN96CBvsAAAAASUVORK5CYII=">
 
-  <!-- Web App Meta -->
+  <!-- iOS Meta -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="TrashGPT">
 
   <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
     body {
       background-color: #343541;
       color: #ececf1;
-      font-family: sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
       padding: 0;
       display: flex;
@@ -28,14 +33,18 @@
     #chat {
       flex: 1;
       overflow-y: auto;
-      padding: 20px;
+      padding: 16px;
+      padding-bottom: 80px;
     }
     .message {
       background: #444654;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 5px;
-      max-width: 80%;
+      padding: 14px;
+      margin: 8px 0;
+      border-radius: 12px;
+      line-height: 1.4;
+      font-size: 16px;
+      max-width: 85%;
+      word-wrap: break-word;
     }
     .user {
       background: #19c37d;
@@ -43,27 +52,34 @@
       align-self: flex-end;
     }
     #inputArea {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
       display: flex;
       padding: 10px;
       background: #40414f;
+      border-top: 1px solid #333;
     }
     #textInput {
       flex: 1;
-      padding: 12px;
+      padding: 14px 16px;
       border: none;
-      border-radius: 5px;
+      border-radius: 20px;
       font-size: 16px;
       background: #343541;
       color: #ececf1;
+      outline: none;
     }
     #sendBtn {
       background: #19c37d;
       border: none;
-      padding: 12px 20px;
-      margin-left: 10px;
-      border-radius: 5px;
+      padding: 0 18px;
+      margin-left: 8px;
+      border-radius: 20px;
       font-size: 16px;
       cursor: pointer;
+      color: #111;
     }
   </style>
 </head>
@@ -123,7 +139,7 @@
       if (i < text.length) {
         msg.textContent += text.charAt(i);
         i++;
-        setTimeout(type, 30);
+        setTimeout(type, 25);
       } else {
         chat.scrollTop = chat.scrollHeight;
       }
@@ -137,7 +153,7 @@
       appendMessage(userText, "user");
       input.value = "";
       const reply = responses[Math.floor(Math.random() * responses.length)];
-      setTimeout(() => typeReply(reply), 500);
+      setTimeout(() => typeReply(reply), 400);
     }
   };
 
