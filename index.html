@@ -5,7 +5,6 @@
   <title>QroqOdile</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='85'>🐊</text></svg>">
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> <!-- Include marked.js -->
   <style>
     body { margin:0; font-family:sans-serif; background:#0d1117; color:#c9d1d9; display:flex; flex-direction:column; height:100vh }
     header { padding:1rem; background:#161b22; font-size:1.4rem; font-weight:600; border-bottom:1px solid #21262d }
@@ -58,7 +57,7 @@ input.addEventListener("keypress", e => {
 function appendMsg(text, type) {
   const msg = document.createElement("div")
   msg.className = "msg " + type
-  msg.innerHTML = marked(text) // Render markdown here
+  msg.textContent = text
   chat.appendChild(msg)
   chat.scrollTop = chat.scrollHeight
 }
