@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TrashGPT</title>
+  <style>
+    body {
+      background-color: #343541;
+      color: #ececf1;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .message {
+      background: #444654;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+      max-width: 80%;
+    }
+    .user {
+      background: #19c37d;
+      color: #111;
+      align-self: flex-end;
+    }
+    #inputArea {
+      display: flex;
+      padding: 10px;
+      background: #40414f;
+    }
+    #textInput {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      background: #343541;
+      color: #ececf1;
+    }
+    #sendBtn {
+      background: #19c37d;
+      border: none;
+      padding: 12px 20px;
+      margin-left: 10px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div id="chat"></div>
+
+<div id="inputArea">
+  <input type="text" id="textInput" placeholder="Type some shit here..." />
+  <button id="sendBtn" onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+  const trashLines = [
+    "bro what in the soggy taco u talking about",
+    "i swear my fridge told me this last night",
+    "2+2=fish and i stand by that",
+    "LMAO your question smells like wet socks",
+    "hold up let me ask the moon real quick",
+    "your phone just blinked at me wtf",
+    "man idk sounds like a cheese problem",
+    "i once arm wrestled a ghost named kevin",
+    "beans are the answer to everything",
+    "the floor just said 'same bro'",
+    "gimme a sec my pet rock is typing",
+    "yo that's illegal in 7 galaxies",
+    "microwave moment activated",
+    "clouds are just floating mashed potatoes bro",
+    "idk ask your left shoe it probably knows",
+    "deadass i think aliens watch this chat",
+    "fridge door philosophy go crazy",
+    "damn bro that sentence felt like stepping on lego",
+    "nah man the moon owes me 5 bucks first",
+    "bruh moment detected"
+  ]
+
+  function sendMessage() {
+    const input = document.getElementById("textInput")
+    const chat = document.getElementById("chat")
+    const userText = input.value.trim()
+    if (userText === "") return
+
+    const userMsg = document.createElement("div")
+    userMsg.className = "message user"
+    userMsg.innerText = userText
+    chat.appendChild(userMsg)
+    chat.scrollTop = chat.scrollHeight
+
+    input.value = ""
+
+    setTimeout(() => {
+      const botMsg = document.createElement("div")
+      botMsg.className = "message"
+      chat.appendChild(botMsg)
+
+      typeReply(botMsg, trashLines[Math.floor(Math.random() * trashLines.length)])
+    }, 500)
+  }
+
+  function typeReply(element, text) {
+    let index = 0
+    const interval = setInterval(() => {
+      element.innerText += text[index]
+      index++
+      if (index >= text.length) {
+        clearInterval(interval)
+      }
+      document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight
+    }, 40)
+  }
+</script>
+
+</body>
+</html>
