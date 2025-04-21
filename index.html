@@ -112,6 +112,7 @@
   }
 
   function typeReply(element, text) {
+    element.innerText = ""  // clear before typing
     let index = 0
     const interval = setInterval(() => {
       element.innerText += text[index]
