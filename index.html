@@ -2,48 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ShitGPT</title>
+  <title>QroqOdile — AI Chat Assistant</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💩</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='85'>🐊</text></svg>">
   <style>
-    body { font-family:sans-serif; background:#0d1117; color:#c9d1d9; margin:0; padding:0; display:flex; flex-direction:column; height:100vh }
-    #chat { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column }
-    .msg { margin:.5rem 0; padding:.75rem 1rem; border-radius:10px; max-width:80%; word-wrap:break-word }
+    body { margin:0; font-family:sans-serif; background:#0d1117; color:#c9d1d9; display:flex; flex-direction:column; height:100vh }
+    header { padding:1rem; background:#161b22; font-size:1.4rem; font-weight:600; border-bottom:1px solid #21262d }
+    #controls { display:flex; gap:.5rem; padding:.8rem 1rem; background:#161b22 }
+    select, button, input { padding:.6rem; border:none; border-radius:6px; background:#0d1117; color:#c9d1d9 }
+    #chat { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column; gap:.75rem }
+    .msg { padding:.75rem 1rem; border-radius:10px; max-width:80%; word-wrap:break-word; line-height:1.4 }
     .user { background:#238636; align-self:flex-end }
     .bot  { background:#161b22; align-self:flex-start }
     #inputWrap { display:flex; padding:1rem; background:#161b22 }
     #textInput { flex:1; padding:.75rem; border:none; border-radius:8px; margin-right:.5rem; background:#0d1117; color:#fff }
     #sendBtn { padding:.75rem 1.25rem; border:none; border-radius:8px; background:#238636; color:#fff; cursor:pointer }
+    .warning { color:#f85149; font-weight:500; padding:.75rem 1rem; background:#161b22; border:1px solid #f85149; border-radius:8px }
   </style>
 </head>
 <body>
 
+<header>🐊 QroqOdile AI Chat</header>
+
+<div id="controls">
+  <select id="modelSelect">
+    <option value="llama3-8b-8192">LLaMA 3 8B</option>
+    <option value="llama2-70b">LLaMA 2 70B</option>
+    <option value="mixtral-8x7b">Mixtral 8x7B</option>
+    <option value="gemma-7b">Gemma 7B</option>
+  </select>
+  <select id="styleSelect">
+    <option value="assistant">Assistant</option>
+    <option value="casual">Casual</option>
+    <option value="formal">Formal</option>
+    <option value="fun">Fun</option>
+  </select>
+</div>
+
 <div id="chat"></div>
 
 <div id="inputWrap">
-  <input id="textInput" type="text" placeholder="Talk to ShitGPT...">
+  <input id="textInput" type="text" placeholder="Type your message...">
   <button id="sendBtn">Send</button>
 </div>
 
 <script>
-const apiKey = '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'
+// Your Groq API Key
+const apiKey = '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'
+
+// Get DOM elements
 const chat = document.getElementById("chat")
 const input = document.getElementById("textInput")
 const sendBtn = document.getElementById("sendBtn")
+const modelSelect = document.getElementById("modelSelect")
+const styleSelect = document.getElementById("styleSelect")
 
+// Forbidden words to check
+const forbiddenWords = [
+  "kill myself","suicide","end my life","hurt myself","shoot","stab",
+  "bomb","attack","threat","harm","die","suicidal","murder"
+]
+
+// Send message button click event
 sendBtn.onclick = () => {
   const userText = input.value.trim()
   if (userText !== "") {
+    if (isUnsafe(userText)) {
+      showWarning("⚠️ Your message contains harmful or dangerous content. Please reach out to a helpline if you're in crisis.")
+      input.value = ""
+      return
+    }
     appendMsg(userText, "user")
     input.value = ""
     getGroqReply(userText)
   }
 }
 
+// Handle Enter key
 input.addEventListener("keypress", e => {
   if (e.key === "Enter") sendBtn.click()
 })
 
+// Append user or bot message to chat
 function appendMsg(text, type) {
   const msg = document.createElement("div")
   msg.className = "msg " + type
@@ -52,25 +92,85 @@ function appendMsg(text, type) {
   chat.scrollTop = chat.scrollHeight
 }
 
-async function getGroqReply(prompt) {
-  appendMsg("Typing...", "bot")
-  const typingMsg = chat.lastChild
+// Show warning message
+function showWarning(text) {
+  const warn = document.createElement("div")
+  warn.className = "warning"
+  warn.textContent = text
+  chat.appendChild(warn)
+  chat.scrollTop = chat.scrollHeight
+}
 
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+// Check if message is unsafe
+function isUnsafe(text) {
+  const lowerText = text.toLowerCase()
+  for (let word of forbiddenWords) {
+    if (lowerText.includes(word)) {
+      return true
+    }
+  }
+  return false
+}
+
+// Get system prompt based on user style choice
+function getSystemPrompt(style) {
+  if (style === "assistant") return "You are a helpful, informative AI assistant."
+  if (style === "casual") return "You are a friendly AI speaking casually."
+  if (style === "formal") return "You respond in a polite, formal tone."
+  if (style === "fun") return "You reply in a fun, lighthearted way."
+  return "You are a helpful AI assistant."
+}
+
+// API call for moderation check (Groq specific)
+async function getModerationResponse(text) {
+  const moderationRes = await fetch("https://api.groq.com/moderations", {  // Groq moderation API endpoint (assumed endpoint)
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer " + apiKey
     },
     body: JSON.stringify({
-      model: "llama3-8b-8192",
-      messages: [{role:"user", content: prompt}],
-      temperature: 1.2
+      input: text
     })
-  })
+  });
 
-  const data = await res.json()
-  typingMsg.textContent = data.choices[0].message.content.trim()
+  const moderationData = await moderationRes.json();
+  return moderationData.results[0].flagged;  // Assuming response contains flag info
+}
+
+// Get Groq AI response
+async function getGroqReply(prompt) {
+  const isFlagged = await getModerationResponse(prompt)
+  if (isFlagged) {
+    showWarning("⚠️ Your message contains harmful or dangerous content. Please be mindful.")
+    return;
+  }
+
+  appendMsg("Typing...", "bot")
+  const typingMsg = chat.lastChild
+
+  const model = modelSelect.value
+  const style = styleSelect.value
+  const systemPrompt = getSystemPrompt(style)
+
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", { // Groq API endpoint for completion
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + apiKey
+    },
+    body: JSON.stringify({
+      model: model,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: prompt }
+      ],
+      temperature: 1.0
+    })
+  });
+
+  const data = await res.json();
+  typingMsg.textContent = data.choices[0].message.content.trim(); // Show the AI reply
 }
 </script>
 
