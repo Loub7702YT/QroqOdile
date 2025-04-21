@@ -2,6 +2,18 @@
 <html>
 <head>
   <title>TrashGPT</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABKklEQVRYR+3XsQnCMBAG4EoHGwEq+yLkOlLXg4ci9yi5C7cmkQCk2BEmc6k6R/+qvOB0fOkHqe84qxd6QbaO5jM90BzGyF/F7Ai/3Gzdh0dX8GZFODdgNpTiFqAyBZhOiCkCmDYJLQCuoFkA7SClgAl4AgACIRbkIuAeGHWxirMRHkRkNvztNFVQVwKP1HjqCOUMIqFZRMVAbAVYSEViBjjcgzvEfgQ/HUkHf8N+miFjCwXTlzAIXazhbugzuDUFcAUlBN6ieRP70dNDO7xjoMnIKPQGd/wcgAAF+yoN96CBvsAAAAASUVORK5CYII=">
+
+  <!-- iOS Home Screen Icon -->
+  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABKklEQVRYR+3XsQnCMBAG4EoHGwEq+yLkOlLXg4ci9yi5C7cmkQCk2BEmc6k6R/+qvOB0fOkHqe84qxd6QbaO5jM90BzGyF/F7Ai/3Gzdh0dX8GZFODdgNpTiFqAyBZhOiCkCmDYJLQCuoFkA7SClgAl4AgACIRbkIuAeGHWxirMRHkRkNvztNFVQVwKP1HjqCOUMIqFZRMVAbAVYSEViBjjcgzvEfgQ/HUkHf8N+miFjCwXTlzAIXazhbugzuDUFcAUlBN6ieRP70dNDO7xjoMnIKPQGd/wcgAAF+yoN96CBvsAAAAASUVORK5CYII=">
+
+  <!-- Web App Meta -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TrashGPT">
+
   <style>
     body {
       background-color: #343541;
@@ -55,74 +67,83 @@
     }
   </style>
 </head>
+
 <body>
 
 <div id="chat"></div>
 
 <div id="inputArea">
-  <input type="text" id="textInput" placeholder="Type some shit here..." />
-  <button id="sendBtn" onclick="sendMessage()">Send</button>
+  <input id="textInput" type="text" placeholder="Say some dumb shit">
+  <button id="sendBtn">Send</button>
 </div>
 
 <script>
-  const trashLines = [
-    "bro what in the soggy taco u talking about",
-    "i swear my fridge told me this last night",
-    "2+2=fish and i stand by that",
-    "LMAO your question smells like wet socks",
-    "hold up let me ask the moon real quick",
-    "your phone just blinked at me wtf",
-    "man idk sounds like a cheese problem",
-    "i once arm wrestled a ghost named kevin",
-    "beans are the answer to everything",
-    "the floor just said 'same bro'",
-    "gimme a sec my pet rock is typing",
-    "yo that's illegal in 7 galaxies",
-    "microwave moment activated",
-    "clouds are just floating mashed potatoes bro",
-    "idk ask your left shoe it probably knows",
-    "deadass i think aliens watch this chat",
-    "fridge door philosophy go crazy",
-    "damn bro that sentence felt like stepping on lego",
-    "nah man the moon owes me 5 bucks first",
-    "bruh moment detected"
-  ]
+  const responses = [
+    "wtf did u just say bro",
+    "that made no sense lmao",
+    "bro what are u on about",
+    "i literally did not ask",
+    "this site is for trash only",
+    "get yo words right clown",
+    "cap detected",
+    "sounds like a skill issue",
+    "bro fr?",
+    "try again dumbass",
+    "ratio + ur irrelevant",
+    "lmfaooooooo",
+    "im boutta block u",
+    "go touch grass",
+    "this chat is cursed af",
+    "nah bro",
+    "ur cooked for that one",
+    "absolute nonsense",
+    "solid 0/10",
+    "based and confusing"
+  ];
 
-  function sendMessage() {
-    const input = document.getElementById("textInput")
-    const chat = document.getElementById("chat")
-    const userText = input.value.trim()
-    if (userText === "") return
+  const chat = document.getElementById("chat");
+  const input = document.getElementById("textInput");
+  const sendBtn = document.getElementById("sendBtn");
 
-    const userMsg = document.createElement("div")
-    userMsg.className = "message user"
-    userMsg.innerText = userText
-    chat.appendChild(userMsg)
-    chat.scrollTop = chat.scrollHeight
-
-    input.value = ""
-
-    setTimeout(() => {
-      const botMsg = document.createElement("div")
-      botMsg.className = "message"
-      chat.appendChild(botMsg)
-
-      typeReply(botMsg, trashLines[Math.floor(Math.random() * trashLines.length)])
-    }, 500)
+  function appendMessage(text, sender) {
+    const msg = document.createElement("div");
+    msg.className = "message " + sender;
+    msg.textContent = text;
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
   }
 
-  function typeReply(element, text) {
-    element.innerText = ""  // clear before typing
-    let index = 0
-    const interval = setInterval(() => {
-      element.innerText += text[index]
-      index++
-      if (index >= text.length) {
-        clearInterval(interval)
+  function typeReply(text) {
+    const msg = document.createElement("div");
+    msg.className = "message";
+    chat.appendChild(msg);
+
+    let i = 0;
+    function type() {
+      if (i < text.length) {
+        msg.textContent += text.charAt(i);
+        i++;
+        setTimeout(type, 30);
+      } else {
+        chat.scrollTop = chat.scrollHeight;
       }
-      document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight
-    }, 40)
+    }
+    type();
   }
+
+  sendBtn.onclick = () => {
+    const userText = input.value.trim();
+    if (userText !== "") {
+      appendMessage(userText, "user");
+      input.value = "";
+      const reply = responses[Math.floor(Math.random() * responses.length)];
+      setTimeout(() => typeReply(reply), 500);
+    }
+  };
+
+  input.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") sendBtn.click();
+  });
 </script>
 
 </body>
